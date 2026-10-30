@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+
+@theme {
+    --font-heading: 'Bricolage Grotesque', sans-serif;
+    --font-sans: 'IBM Plex Sans', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+
+    --color-paper: #F4EFE6;
+    --color-paper-light: #FAF7F2;
+    --color-paper-dark: #ECE5DA;
+    --color-ink: #1B1B18;
+    --color-ink-muted: #57574E;
+    --color-forest: #1F3D2B;
+    --color-forest-dark: #162E20;
+    --color-forest-light: #2A4E38;
+    --color-brick: #C2542D;
+    --color-brick-dark: #9F4120;
+    --color-line: #DDD5C7;
+    --color-line-dark: #BDB4A3;
+}
+
+@layer base {
+    body {
+        background-color: var(--color-paper);
+        color: var(--color-ink);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+        letter-spacing: -0.02em;
+    }
+
+    .font-mono {
+        font-family: var(--font-mono);
+    }
+}
+
+/* Animasi halus saat halaman dibuka */
+@keyframes ledgerFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-ledger-in {
+    animation: ledgerFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

@@ -1,0 +1,37 @@
+DirectoryIndex public/index.php index.php
+
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # 1. Izinkan akses langsung ke file foto/storage publik
+    RewriteRule ^storage/(.*)$ public/storage/$1 [L]
+
+    # 2. Keamanan: Blokir akses ke file & folder sensitif Laravel
+    RewriteRule ^(\.env|\.git|composer\.(json|lock)|package(-lock)?\.json|artisan|phpunit\.xml) - [F,L,NC]
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage/(app/private|framework|logs)|tests|vendor)(/|$) - [F,L,NC]
+
+    # 3. Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # 4. Handle X-XSRF-Token Header
+    RewriteCond %{HTTP:x-xsrf-token} .
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+
+    # 5. Jika request halaman utama (/), langsung berikan public/index.php
+    RewriteRule ^$ public/index.php [L]
+
+    # 6. Jika file aset fisik ada di folder public (css, js, build, images, storage)
+    RewriteCond %{DOCUMENT_ROOT}/public/$1 -f [OR]
+    RewriteCond %{DOCUMENT_ROOT}/public/$1 -d
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # 7. Kirim semua request lainnya ke public/index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/index.php [L]
+</IfModule>
