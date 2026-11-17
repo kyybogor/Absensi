@@ -7,6 +7,7 @@ use App\Models\Absensi;
 use App\Models\JamAbsen;
 use App\Services\CatatAbsenPulangService;
 use App\Services\CatatAbsensiService;
+use App\Services\PoseTantanganService;
 use Carbon\Carbon;
 use DomainException;
 use Illuminate\Http\RedirectResponse;
@@ -33,12 +34,16 @@ class AbsensiController extends Controller
 
         $batasJam = JamAbsen::getBatas();
         $batasJamFormat = JamAbsen::getBatasFormat();
+        $poseTantangan = PoseTantanganService::random();
+        $semuaPose = PoseTantanganService::all();
 
         return view('absensi.create', [
             'absensiHariIni' => $absensiHariIni,
             'batasJam' => $batasJam,
             'batasJamFormat' => $batasJamFormat,
             'tanggalLabel' => $sekarang->translatedFormat('l, d F Y'),
+            'poseTantangan' => $poseTantangan,
+            'semuaPose' => $semuaPose,
         ]);
     }
 
@@ -48,7 +53,11 @@ class AbsensiController extends Controller
     public function store(SimpanAbsensiRequest $request, CatatAbsensiService $service): RedirectResponse
     {
         try {
-            $absensi = $service->execute($request->user(), $request->file('foto'));
+            $absensi = $service->execute(
+                $request->user(),
+                $request->file('foto'),
+                $request->input('pose')
+            );
 
             $pesan = $absensi->status->isTelat()
                 ? "Absensi masuk tercatat. Anda telat {$absensi->keterlambatan_format}."
@@ -70,7 +79,11 @@ class AbsensiController extends Controller
     public function storePulang(SimpanAbsensiRequest $request, CatatAbsenPulangService $service): RedirectResponse
     {
         try {
-            $absensi = $service->execute($request->user(), $request->file('foto'));
+            $absensi = $service->execute(
+                $request->user(),
+                $request->file('foto'),
+                $request->input('pose')
+            );
 
             $jamPulangFormat = substr($absensi->jam_pulang, 0, 5);
             $pesan = "Absensi pulang berhasil dicatat pada pukul {$jamPulangFormat} WIB. Selamat beristirahat!";

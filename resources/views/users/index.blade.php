@@ -13,9 +13,24 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {{-- Kolom Kiri: Formulir Pendaftaran Akun Baru --}}
-            <div class="lg:col-span-5">
+        {{-- Pesan Status Berhasil Realtime (AJAX) --}}
+        <div id="realtimeAlertContainer" class="hidden p-3.5 bg-[#E5EEE8] border border-[#1F3D2B] text-[#1F3D2B] text-xs font-mono rounded-[2px] flex items-center justify-between shadow-2xs">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0 text-[#1F3D2B]" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span id="realtimeAlertMessage"></span>
+            </div>
+            <button type="button"
+                    onclick="document.getElementById('realtimeAlertContainer').classList.add('hidden')"
+                    class="text-xs font-mono text-[#57574E] hover:text-[#1B1B18] cursor-pointer">
+                ✕
+            </button>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-6 items-start">
+            {{-- Kolom Kiri: Formulir Pendaftaran Akun Baru (Lebar penuh di mobile, 340px di desktop) --}}
+            <div class="w-full lg:w-[340px] lg:shrink-0">
                 <x-card title="Formulir Tambah Akun" subtitle="Username, peran, dan kata sandi wajib diisi. Email bersifat opsional. Kata sandi otomatis dienkripsi dengan bcrypt.">
                     <form method="POST" action="{{ route('users.store') }}" class="space-y-4">
                         @csrf
@@ -118,8 +133,8 @@
                 </x-card>
             </div>
 
-            {{-- Kolom Kanan: Daftar Akun Terdaftar --}}
-            <div class="lg:col-span-7">
+            {{-- Kolom Kanan: Daftar Akun Terdaftar (Responsif penuh) --}}
+            <div class="w-full flex-1 min-w-0">
                 <div class="bg-[#FAF7F2] border border-[#DDD5C7] rounded-[2px] overflow-hidden">
                     <div class="p-4 border-b border-[#DDD5C7] bg-[#ECE5DA]">
                         <h2 class="text-xs font-mono font-bold uppercase tracking-wider text-[#1B1B18]">
@@ -131,25 +146,33 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="border-b border-[#DDD5C7] bg-[#F4EFE6] text-[11px] font-mono uppercase tracking-wider text-[#57574E]">
-                                    <th class="py-2.5 px-4 font-semibold">Username</th>
-                                    <th class="py-2.5 px-4 font-semibold">Email</th>
-                                    <th class="py-2.5 px-4 font-semibold">Peran</th>
-                                    <th class="py-2.5 px-4 font-semibold">Terdaftar</th>
+                                    <th class="py-2.5 px-3 sm:px-4 font-semibold">Username</th>
+                                    <th class="hidden md:table-cell py-2.5 px-4 font-semibold">Email</th>
+                                    <th class="py-2.5 px-2.5 sm:px-4 font-semibold">Peran</th>
+                                    <th class="hidden sm:table-cell py-2.5 px-4 font-semibold">Terdaftar</th>
+                                    <th class="py-2.5 px-3 sm:px-4 font-semibold text-right" style="min-width: 130px;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-[#DDD5C7] text-xs">
                                 @forelse ($users as $user)
                                     <tr class="hover:bg-[#F4EFE6] transition duration-75">
-                                        <td class="py-3 px-4 font-medium text-[#1B1B18]">
-                                            {{ $user->username ?? $user->name }}
-                                            @if ($user->id === auth()->id())
-                                                <span class="text-[10px] font-mono text-[#1F3D2B] ml-1">(Anda)</span>
+                                        <td class="py-3 px-3 sm:px-4">
+                                            <div class="font-medium text-[#1B1B18] leading-tight">
+                                                {{ $user->username ?? $user->name }}
+                                                @if ($user->id === auth()->id())
+                                                    <span class="text-[10px] font-mono text-[#1F3D2B] ml-1 font-semibold">(Anda)</span>
+                                                @endif
+                                            </div>
+                                            @if ($user->email)
+                                                <div class="md:hidden text-[11px] font-mono text-[#57574E] mt-0.5 truncate max-w-[140px] sm:max-w-none">
+                                                    {{ $user->email }}
+                                                </div>
                                             @endif
                                         </td>
-                                        <td class="py-3 px-4 font-mono text-[#57574E]">
+                                        <td class="hidden md:table-cell py-3 px-4 font-mono text-[#57574E] truncate max-w-[200px]">
                                             {{ $user->email ?? '—' }}
                                         </td>
-                                        <td class="py-3 px-4">
+                                        <td class="py-3 px-2.5 sm:px-4 whitespace-nowrap">
                                             @if ($user->role === \App\Enums\Role::Admin)
                                                 <span class="inline-block px-1.5 py-0.5 text-[10px] font-mono font-semibold uppercase tracking-wider border border-[#1F3D2B] text-[#1F3D2B] bg-[#E5EEE8] rounded-[2px]">
                                                     Admin
@@ -160,13 +183,26 @@
                                                 </span>
                                             @endif
                                         </td>
-                                        <td class="py-3 px-4 font-mono text-[11px] text-[#57574E]">
+                                        <td class="hidden sm:table-cell py-3 px-4 font-mono text-[11px] text-[#57574E] whitespace-nowrap">
                                             {{ $user->created_at?->translatedFormat('d/m/Y') ?? '-' }}
+                                        </td>
+                                        <td class="py-3 px-3 sm:px-4 text-right whitespace-nowrap">
+                                            <button type="button"
+                                                    onclick="openChangePasswordModal('{{ $user->id }}', '{{ addslashes($user->username ?? $user->name) }}')"
+                                                    class="inline-flex items-center justify-center space-x-1.5 px-2.5 py-1.5 sm:px-3 text-[11px] font-mono font-semibold uppercase tracking-wider text-[#1F3D2B] bg-[#E5EEE8] hover:bg-[#1F3D2B] hover:text-[#FAF7F2] border border-[#1F3D2B] rounded-[2px] transition duration-150 cursor-pointer whitespace-nowrap shadow-2xs"
+                                                    title="Ganti kata sandi untuk {{ $user->username ?? $user->name }}">
+                                                <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="7.5" cy="15.5" r="5.5"></circle>
+                                                    <path d="m21 2-9.6 9.6"></path>
+                                                    <path d="m15.5 7.5 3 3L22 7l-3-3"></path>
+                                                </svg>
+                                                <span>Ganti Sandi</span>
+                                            </button>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="py-6 px-4 text-center font-mono text-xs text-[#57574E]">
+                                        <td colspan="5" class="py-6 px-4 text-center font-mono text-xs text-[#57574E]">
                                             Belum ada data akun pengguna.
                                         </td>
                                     </tr>
@@ -184,4 +220,24 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal Ganti Password di File Terpisah --}}
+    @include('users.change-password-modal')
+
+    @push('scripts')
+    <script>
+        function showToastNotification(message) {
+            const container = document.getElementById('realtimeAlertContainer');
+            const text = document.getElementById('realtimeAlertMessage');
+            if (container && text) {
+                text.textContent = message;
+                container.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => {
+                    container.classList.add('hidden');
+                }, 6000);
+            }
+        }
+    </script>
+    @endpush
 </x-layouts.app>

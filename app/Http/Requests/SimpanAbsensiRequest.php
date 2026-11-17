@@ -54,6 +54,7 @@ class SimpanAbsensiRequest extends FormRequest
     {
         return [
             'foto' => ['required', 'file', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'pose' => ['nullable', 'string', 'max:50'],
         ];
     }
 

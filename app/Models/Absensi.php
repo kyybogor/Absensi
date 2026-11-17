@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\StatusAbsensi;
+use App\Services\PoseTantanganService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -32,7 +33,9 @@ class Absensi extends Model
         'jam_masuk',
         'jam_pulang',
         'foto',
+        'pose_masuk',
         'foto_pulang',
+        'pose_pulang',
         'status',
         'telat_menit',
         'keterangan',
@@ -78,6 +81,26 @@ class Absensi extends Model
         return Attribute::make(
             get: fn (): ?string => $this->foto_pulang ? Storage::disk('public')->url($this->foto_pulang) : null,
         );
+    }
+
+    /**
+     * Detail konfigurasi pose tantangan masuk (nama, gambar, icon, dll).
+     *
+     * @return array{code: string, nama: string, deskripsi: string, gambar: string, icon: string}|null
+     */
+    public function getPoseMasukDetailAttribute(): ?array
+    {
+        return PoseTantanganService::find($this->pose_masuk);
+    }
+
+    /**
+     * Detail konfigurasi pose tantangan pulang (nama, gambar, icon, dll).
+     *
+     * @return array{code: string, nama: string, deskripsi: string, gambar: string, icon: string}|null
+     */
+    public function getPosePulangDetailAttribute(): ?array
+    {
+        return PoseTantanganService::find($this->pose_pulang);
     }
 
     /**

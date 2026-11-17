@@ -17,6 +17,16 @@
         {{-- Panel Kiri Asimetris (Hijau Tua Utilitarian) --}}
         <div class="w-full md:w-5/12 lg:w-4/12 bg-[#1F3D2B] text-[#FAF7F2] p-8 md:p-12 lg:p-16 flex flex-col justify-between border-b md:border-b-0 md:border-r border-[#162E20]">
             <div>
+                {{-- Logo ColorKing murni diperbesar agar proporsional dengan judul --}}
+                <div class="mb-7">
+                    <img 
+                        src="{{ asset('images/logo-color-king.png') }}?v={{ file_exists(public_path('images/logo-color-king.png')) ? filemtime(public_path('images/logo-color-king.png')) : 1 }}" 
+                        alt="ColorKing Logo" 
+                        class="w-52 sm:w-60 md:w-64 h-auto object-contain" 
+                        style="width: 230px; max-width: 85%; height: auto; mix-blend-mode: screen;"
+                    >
+                </div>
+
                 <div class="inline-block px-2 py-0.5 border border-[#40684F] text-[10px] font-mono tracking-widest uppercase text-[#FAF7F2] mb-6 rounded-[2px]">
                     Buku Kehadiran Digital
                 </div>

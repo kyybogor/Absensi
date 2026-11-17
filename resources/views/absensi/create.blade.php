@@ -93,6 +93,15 @@
                                 <span class="font-mono text-[#57574E] uppercase">Jam Masuk</span>
                                 <span class="font-mono font-bold text-[#1B1B18]">{{ substr($absensiHariIni->jam_masuk, 0, 5) }} WIB</span>
                             </div>
+                            @if ($absensiHariIni->pose_masuk_detail)
+                                <div class="flex justify-between py-2 text-xs items-center">
+                                    <span class="font-mono text-[#57574E] uppercase">Pose Masuk</span>
+                                    <span class="inline-flex items-center space-x-1.5 font-mono font-medium text-[#1F3D2B] bg-[#E5EEE8] px-2 py-0.5 rounded-[2px] border border-[#1F3D2B]/30">
+                                        <span>{{ $absensiHariIni->pose_masuk_detail['icon'] }}</span>
+                                        <span>{{ $absensiHariIni->pose_masuk_detail['nama'] }}</span>
+                                    </span>
+                                </div>
+                            @endif
                             <div class="flex justify-between py-2 text-xs items-center">
                                 <span class="font-mono text-[#57574E] uppercase">Status Masuk</span>
                                 <div>
@@ -115,6 +124,15 @@
                                     @endif
                                 </span>
                             </div>
+                            @if ($sudahPulang && $absensiHariIni->pose_pulang_detail)
+                                <div class="flex justify-between py-2 text-xs items-center">
+                                    <span class="font-mono text-[#57574E] uppercase">Pose Pulang</span>
+                                    <span class="inline-flex items-center space-x-1.5 font-mono font-medium text-[#1F3D2B] bg-[#E5EEE8] px-2 py-0.5 rounded-[2px] border border-[#1F3D2B]/30">
+                                        <span>{{ $absensiHariIni->pose_pulang_detail['icon'] }}</span>
+                                        <span>{{ $absensiHariIni->pose_pulang_detail['nama'] }}</span>
+                                    </span>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="text-xs font-mono text-[#57574E] flex items-center space-x-3 pt-1">
@@ -222,6 +240,12 @@
                             <div id="cameraStatusBadge" class="absolute top-3 left-3 px-2 py-0.5 bg-[#1B1B18]/80 border border-[#DDD5C7]/30 text-[10px] font-mono uppercase tracking-widest text-[#FAF7F2] rounded-[2px]">
                                 Kamera Siap
                             </div>
+
+                            {{-- Badge Tantangan Pose Aktif di Kamera --}}
+                            <div class="absolute top-3 right-3 px-2.5 py-1 bg-[#1F3D2B]/90 border border-[#DDD5C7]/30 text-[11px] font-mono text-[#FAF7F2] rounded-[2px] shadow flex items-center space-x-1.5">
+                                <span>{{ $poseTantangan['icon'] }}</span>
+                                <span class="font-bold">{{ $poseTantangan['nama'] }}</span>
+                            </div>
                         </div>
 
                         {{-- Tombol Kontrol Kamera --}}
@@ -236,42 +260,85 @@
                         </div>
                     </div>
 
-                    {{-- Panel Konfirmasi & Tombol Kirim --}}
-                    <div class="md:col-span-5 flex flex-col justify-between border-t md:border-t-0 md:border-l border-[#DDD5C7] pt-6 md:pt-0 md:pl-6">
+                    {{-- Panel Konfirmasi, Pose Referensi & Tombol Kirim --}}
+                    <div class="md:col-span-5 flex flex-col justify-between border-t md:border-t-0 md:border-l border-[#DDD5C7] pt-6 md:pt-0 md:pl-6 space-y-4">
                         <div class="space-y-4">
-                            <span class="text-xs font-mono uppercase tracking-wider text-[#57574E] block">
-                                Ketentuan {{ $isActionPulang ? 'Absen Pulang' : 'Absen Masuk' }}
-                            </span>
+                            {{-- Kotak Tantangan Pose Wajib (Contoh Foto & Instruksi) --}}
+                            <div class="bg-[#FAF7F2] border-2 border-[#1F3D2B] p-3.5 rounded-[2px] space-y-2.5 shadow-xs">
+                                <div class="flex items-center justify-between pb-1.5 border-b border-[#DDD5C7]">
+                                    <div class="inline-flex items-center space-x-1.5 px-2 py-0.5 bg-[#1F3D2B] text-[#FAF7F2] text-[10px] font-mono uppercase tracking-wider rounded-[2px] font-bold">
+                                        <span>🛡️ Pose Wajib Absensi</span>
+                                    </div>
+                                    <span class="text-xl leading-none">{{ $poseTantangan['icon'] }}</span>
+                                </div>
 
-                            <div class="space-y-2 text-xs text-[#57574E] leading-relaxed">
-                                <div class="flex items-start space-x-2">
-                                    <span class="font-mono text-[#1F3D2B] font-bold">1.</span>
-                                    <span>Wajah harus terlihat jelas menghadap kamera saat pengambilan foto.</span>
+                                <div class="flex items-start space-x-3">
+                                    {{-- Foto Referensi Orang Asli --}}
+                                    <div class="w-24 h-24 sm:w-28 sm:h-28 shrink-0 bg-white rounded-[2px] border border-[#1F3D2B] overflow-hidden shadow-xs relative">
+                                        <img src="{{ asset($poseTantangan['gambar']) }}"
+                                             alt="{{ $poseTantangan['nama'] }}"
+                                             class="w-full h-full object-cover">
+                                        <div class="absolute bottom-0 inset-x-0 bg-[#1B1B18]/85 text-white py-0.5 px-1 text-center text-[8px] font-mono">
+                                            Contoh Foto
+                                        </div>
+                                    </div>
+
+                                    {{-- Detail Instruksi Pose --}}
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="font-bold text-xs sm:text-sm font-mono text-[#1F3D2B] uppercase tracking-tight">
+                                            {{ $poseTantangan['nama'] }}
+                                        </h4>
+                                        <p class="text-[11px] text-[#1B1B18] mt-1 font-medium leading-snug">
+                                            {{ $poseTantangan['deskripsi'] }}
+                                        </p>
+                                        <div class="mt-2 text-[10px] font-mono text-[#C2542D] leading-tight flex items-start space-x-1">
+                                            <span>⚠️</span>
+                                            <span>Tirukan pose di samping saat menekan tombol Ambil Foto!</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex items-start space-x-2">
-                                    <span class="font-mono text-[#1F3D2B] font-bold">2.</span>
-                                    @if ($isActionPulang)
-                                        <span>Absen pulang mencatat jam kepulangan resmi hari ini secara permanen.</span>
-                                    @else
-                                        <span>Satu karyawan hanya dapat melakukan absensi masuk 1 kali per hari.</span>
-                                    @endif
-                                </div>
-                                <div class="flex items-start space-x-2">
-                                    <span class="font-mono text-[#1F3D2B] font-bold">3.</span>
-                                    <span>Waktu yang dicatat menggunakan waktu server Jakarta (WIB).</span>
+                            </div>
+
+                            {{-- Ketentuan --}}
+                            <div>
+                                <span class="text-xs font-mono uppercase tracking-wider text-[#57574E] block mb-2 font-semibold">
+                                    Ketentuan {{ $isActionPulang ? 'Absen Pulang' : 'Absen Masuk' }}
+                                </span>
+                                <div class="space-y-2 text-xs text-[#57574E] leading-relaxed">
+                                    <div class="flex items-start space-x-2">
+                                        <span class="font-mono text-[#1F3D2B] font-bold">1.</span>
+                                        <span>Wajah harus terlihat jelas menghadap kamera saat pengambilan foto.</span>
+                                    </div>
+                                    <div class="flex items-start space-x-2">
+                                        <span class="font-mono text-[#1F3D2B] font-bold">2.</span>
+                                        <span class="font-bold text-[#1F3D2B]">Wajib berpose sesuai instruksi: <span>{{ $poseTantangan['nama'] }}</span>.</span>
+                                    </div>
+                                    <div class="flex items-start space-x-2">
+                                        <span class="font-mono text-[#1F3D2B] font-bold">3.</span>
+                                        @if ($isActionPulang)
+                                            <span>Absen pulang mencatat jam kepulangan resmi hari ini secara permanen.</span>
+                                        @else
+                                            <span>Satu karyawan hanya dapat melakukan absensi masuk 1 kali per hari.</span>
+                                        @endif
+                                    </div>
+                                    <div class="flex items-start space-x-2">
+                                        <span class="font-mono text-[#1F3D2B] font-bold">4.</span>
+                                        <span>Waktu yang dicatat menggunakan waktu server Jakarta (WIB).</span>
+                                    </div>
                                 </div>
                             </div>
 
                             <div id="photoStatusNotice" class="p-3 bg-[#F4EFE6] border border-[#DDD5C7] rounded-[2px] text-xs font-mono text-[#57574E]">
-                                Foto belum diambil. Klik tombol "Ambil Foto" di samping.
+                                Foto belum diambil. Tirukan pose lalu klik "Ambil Foto".
                             </div>
                         </div>
 
                         {{-- Formulir Kirim Absensi --}}
-                        <form id="attendanceForm" method="POST" action="{{ $formAction }}" enctype="multipart/form-data" class="mt-6">
+                        <form id="attendanceForm" method="POST" action="{{ $formAction }}" enctype="multipart/form-data" class="mt-4">
                             @csrf
                             <input type="file" id="fotoFileInput" name="foto" class="hidden" accept="image/jpeg,image/png">
                             <input type="hidden" id="fotoBase64Input" name="foto_base64">
+                            <input type="hidden" id="inputPoseCode" name="pose" value="{{ $poseTantangan['code'] }}">
 
                             <x-button type="submit" id="btnSubmitAttendance" variant="{{ $isActionPulang ? 'primary' : 'accent' }}" class="w-full py-3" disabled>
                                 {{ $buttonLabel }}
@@ -311,6 +378,9 @@
             // 2. Logika Kamera & Pengambilan Foto (Hanya jika form kamera aktif)
             const video = document.getElementById('videoElement');
             if (!video) return; // Form kamera tidak aktif (sudah lengkap masuk & pulang)
+
+            // Setup Tantangan Pose Aktif
+            const currentPose = @json($poseTantangan ?? null);
 
             const canvas = document.getElementById('photoCanvas');
             const photoResult = document.getElementById('photoResult');
@@ -391,7 +461,36 @@
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 const ctx = canvas.getContext('2d');
+
+                // 1. Gambar frame video mentah dari kamera
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // 2. Beri Watermark Otomatis Anti-Manipulasi di Bagian Bawah Foto
+                const barHeight = Math.max(54, Math.round(canvas.height * 0.09));
+                ctx.fillStyle = 'rgba(27, 27, 24, 0.82)';
+                ctx.fillRect(0, canvas.height - barHeight, canvas.width, barHeight);
+
+                // Garis aksen atas bar
+                ctx.fillStyle = '#1F3D2B';
+                ctx.fillRect(0, canvas.height - barHeight, canvas.width, 3);
+
+                // Teks watermark
+                const userName = "{{ addslashes(auth()->user()->name) }}";
+                const now = new Date();
+                const timeString = now.toLocaleDateString('id-ID', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                }) + ' ' + now.toLocaleTimeString('id-ID', { hour12: false }) + ' WIB';
+
+                ctx.fillStyle = '#FAF7F2';
+                ctx.font = `bold ${Math.round(barHeight * 0.28)}px monospace`;
+                ctx.fillText(`${userName} • ${timeString}`, 16, canvas.height - barHeight * 0.52);
+
+                const poseText = currentPose ? `POSE: ${currentPose.nama.toUpperCase()}` : 'VERIFIKASI PRESENSI';
+                ctx.fillStyle = '#E39A3B';
+                ctx.font = `bold ${Math.round(barHeight * 0.24)}px monospace`;
+                ctx.fillText(poseText, 16, canvas.height - barHeight * 0.18);
 
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
 
@@ -420,7 +519,7 @@
                 cameraStatusBadge.textContent = 'Foto Siap Disimpan';
 
                 statusNotice.className = 'p-3 bg-[#E5EEE8] border border-[#1F3D2B] rounded-[2px] text-xs font-mono text-[#1F3D2B]';
-                statusNotice.textContent = 'Foto wajah telah berhasil ditangkap. Klik tombol di bawah untuk menyimpan absensi.';
+                statusNotice.textContent = 'Foto wajah telah berhasil ditangkap beserta tanda pose. Klik tombol di bawah untuk menyimpan absensi.';
             });
 
             btnRetake.addEventListener('click', function() {
@@ -435,7 +534,7 @@
                 cameraStatusBadge.textContent = 'Kamera Aktif';
 
                 statusNotice.className = 'p-3 bg-[#F4EFE6] border border-[#DDD5C7] rounded-[2px] text-xs font-mono text-[#57574E]';
-                statusNotice.textContent = 'Foto dibatalkan. Silakan ambil foto kembali.';
+                statusNotice.textContent = 'Foto dibatalkan. Silakan ambil foto kembali sesuai pose.';
             });
 
             window.addEventListener('beforeunload', function() {

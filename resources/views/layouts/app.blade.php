@@ -13,7 +13,7 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-[#F4EFE6] text-[#1B1B18] font-sans min-h-screen flex flex-col selection:bg-[#1F3D2B] selection:text-[#FAF7F2]">
+<body class="bg-[#F4EFE6] text-[#1B1B18] font-sans min-h-screen flex flex-col overflow-x-hidden w-full max-w-full selection:bg-[#1F3D2B] selection:text-[#FAF7F2]">
     {{-- Header / Navigasi Buku Besar Kantor --}}
     <header class="border-b border-[#DDD5C7] bg-[#FAF7F2] sticky top-0 z-40">
         <div class="max-w-6xl mx-auto px-4 sm:px-6">
@@ -100,7 +100,7 @@
     </header>
 
     {{-- Isi Konten Halaman --}}
-    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 md:py-8 animate-ledger-in">
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 md:py-8 animate-ledger-in min-w-0 overflow-x-hidden">
         {{-- Pesan Status Berhasil --}}
         @if (session('status_sukses'))
             <div class="mb-6 p-4 bg-[#E5EEE8] border border-[#1F3D2B] text-[#1F3D2B] text-sm rounded-[2px] flex items-start justify-between">
@@ -134,6 +134,7 @@
         </div>
     </footer>
 
+    @stack('modals')
     @stack('scripts')
 </body>
 </html>

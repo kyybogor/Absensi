@@ -34,9 +34,10 @@ Route::middleware('auth')->group(function (): void {
 
     // Menu Khusus Admin
     Route::middleware('admin')->prefix('admin')->group(function (): void {
-        // Tambah dan Daftar Akun
+        // Tambah, Daftar Akun & Ubah Password
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::post('/users', [UserController::class, 'store'])->name('users.store');
+        Route::put('/users/{user}/password', [UserController::class, 'updatePassword'])->name('users.update-password');
 
         // Atur Jam Absen
         Route::get('/jam-absen', [JamAbsenController::class, 'edit'])->name('jam-absen.edit');

@@ -28,7 +28,7 @@ class CatatAbsensiService
      * @throws DomainException
      * @throws Throwable
      */
-    public function execute(User $user, UploadedFile $file): Absensi
+    public function execute(User $user, UploadedFile $file, ?string $pose = null): Absensi
     {
         $sekarang = Carbon::now('Asia/Jakarta');
         $tanggalHariIni = $sekarang->toDateString();
@@ -61,7 +61,7 @@ class CatatAbsensiService
         $pathTersimpan = $file->storeAs('absensi', $namaFile, 'public');
 
         try {
-            return DB::transaction(function () use ($user, $tanggalHariIni, $sekarang, $pathTersimpan, $status, $telatMenit): Absensi {
+            return DB::transaction(function () use ($user, $tanggalHariIni, $sekarang, $pathTersimpan, $status, $telatMenit, $pose): Absensi {
                 return Absensi::create([
                     'user_id' => $user->id,
                     'tanggal' => $tanggalHariIni,
@@ -69,6 +69,7 @@ class CatatAbsensiService
                     'foto' => $pathTersimpan,
                     'status' => $status,
                     'telat_menit' => $telatMenit,
+                    'pose_masuk' => $pose,
                 ]);
             });
         } catch (Throwable $e) {
